@@ -1,290 +1,366 @@
 <!DOCTYPE html>
-<html lang="ms-MY">
+<html lang="ms-MY" class="overflow-hidden overscroll-none">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Klik & Belajar: Nombor 0-10</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Klik & Belajar: Nombor 0-10</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  <style>
-    /* --- UI STYLE (MASTER REFERENCE) --- */
-    body { 
-        font-family: 'Fredoka', sans-serif; 
-        background-color: #f0fdf4; 
-        background-image: radial-gradient(#86efac 2px, transparent 2px); 
-        background-size: 30px 30px; 
-    }
-    
-    .game-card { 
-        background: white; 
-        border: 4px solid #475569; 
-        box-shadow: 8px 8px 0px #00000020; 
-        border-radius: 1.5rem; 
-        min-height: 600px; 
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        overflow: hidden; 
-    }
-    
-    /* Buttons */
-    .btn-3d { 
-        transition: all 0.1s; 
-        border-bottom-width: 6px; 
-        border-color: rgba(0,0,0,0.2); 
-        transform: translateY(0); 
-        cursor: pointer; 
-        display: inline-block; 
-    }
-    .btn-3d:active:not(:disabled) { transform: translateY(4px); border-bottom-width: 2px; box-shadow: none; }
-    
-    /* Animations */
-    .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-    
-    /* Drag & Drop */
-    .draggable { cursor: grab; touch-action: none; }
-    .draggable:active { cursor: grabbing; opacity: 0.6; transform: scale(1.05) rotate(3deg); }
-    .drop-zone { transition: all 0.2s; border: 4px dashed #cbd5e1; background: #f8fafc; }
-    .drop-zone.drag-over { background: #dbeafe; border-color: #3b82f6; transform: scale(1.02); }
+    <style>
+        /* --- UI STYLE (MASTER REFERENCE) --- */
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #f0fdf4;
+            background-image: radial-gradient(#86efac 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
 
-    /* Activity Specific */
-    .coloring-item { cursor: pointer; stroke: #475569; stroke-width: 3; fill: white; transition: all 0.2s; }
-    .coloring-item:hover { stroke-width: 5; transform: scale(1.02); transform-origin: center; }
-    
-    .num-card { transition: all 0.2s; }
-    .num-card:hover { transform: scale(1.05); }
-    .num-card.selected { background-color: #fef08a; border-color: #eab308; transform: scale(1.1); }
-    .num-card.matched { background-color: #86efac !important; border-color: #16a34a !important; color: #064e3b !important; }
+        .game-card {
+            background: white;
+            border: 4px solid #475569;
+            box-shadow: 8px 8px 0px #00000020;
+            border-radius: 1.5rem;
+            /* min-height: 600px; REMOVED */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-  </style>
+        /* Buttons */
+        .btn-3d {
+            transition: all 0.1s;
+            border-bottom-width: 6px;
+            border-color: rgba(0, 0, 0, 0.2);
+            transform: translateY(0);
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+            box-shadow: none;
+        }
+
+        /* Animations */
+        .pop-in {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Drag & Drop */
+        .draggable {
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .draggable:active {
+            cursor: grabbing;
+            opacity: 0.6;
+            transform: scale(1.05) rotate(3deg);
+        }
+
+        .drop-zone {
+            transition: all 0.2s;
+            border: 4px dashed #cbd5e1;
+            background: #f8fafc;
+        }
+
+        .drop-zone.drag-over {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            transform: scale(1.02);
+        }
+
+        /* Activity Specific */
+        .coloring-item {
+            cursor: pointer;
+            stroke: #475569;
+            stroke-width: 3;
+            fill: white;
+            transition: all 0.2s;
+        }
+
+        .coloring-item:hover {
+            stroke-width: 5;
+            transform: scale(1.02);
+            transform-origin: center;
+        }
+
+        .num-card {
+            transition: all 0.2s;
+        }
+
+        .num-card:hover {
+            transform: scale(1.05);
+        }
+
+        .num-card.selected {
+            background-color: #fef08a;
+            border-color: #eab308;
+            transform: scale(1.1);
+        }
+
+        .num-card.matched {
+            background-color: #86efac !important;
+            border-color: #16a34a !important;
+            color: #064e3b !important;
+        }
+    </style>
 </head>
-<body class="min-h-screen text-slate-800 pb-10">
 
-  <div class="fixed top-4 left-0 right-0 z-50 px-4 pointer-events-none">
-    <div class="max-w-4xl mx-auto bg-green-400 border-4 border-green-600 rounded-full px-6 py-3 shadow-xl flex items-center justify-between pointer-events-auto transform hover:scale-[1.01] transition-transform">
-      <div class="flex items-center gap-3">
-        <span class="text-3xl animate-bounce">🔢</span>
-        <span id="info-text" class="text-xl font-bold text-green-900 leading-none mt-1">Nombor 0-10</span>
-      </div>
-      <button id="speak-btn" onclick="speakInfo()" class="bg-white hover:bg-green-50 text-green-600 border-2 border-green-200 rounded-full p-2 transition-colors shadow-sm">🔊</button>
+<body class="h-screen w-screen overflow-hidden text-slate-800 flex flex-col overscroll-none">
+
+    <div class="flex-none p-4 z-50 pointer-events-none w-full">
+        <div
+            class="max-w-4xl mx-auto bg-green-400 border-4 border-green-600 rounded-full px-6 py-3 shadow-xl flex items-center justify-between pointer-events-auto transform hover:scale-[1.01] transition-transform">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl animate-bounce">🔢</span>
+                <span id="info-text" class="text-xl font-bold text-green-900 leading-none mt-1">Nombor 0-10</span>
+            </div>
+            <button id="speak-btn" onclick="speakInfo()"
+                class="bg-white hover:bg-green-50 text-green-600 border-2 border-green-200 rounded-full p-2 transition-colors shadow-sm">🔊</button>
+        </div>
     </div>
-  </div>
-  <div class="h-24"></div>
 
-  <div class="max-w-6xl mx-auto p-4">
-    
-    <div class="game-card p-8 mb-8">
-        <div id="activity-content" class="w-full relative z-10 flex flex-col items-center justify-center h-full transition-opacity duration-200">
-            <div class="py-10 text-center">
-                <div class="text-8xl mb-6 animate-pulse">🎯</div>
-                <h2 class="text-5xl font-bold text-emerald-600 mb-4">Mula Belajar</h2>
-                <p class="text-2xl text-slate-500 mb-8 font-semibold">Pilih aktiviti di bawah.</p>
-                <div class="text-4xl animate-bounce">👇</div>
+    <div class="flex-1 w-full max-w-6xl mx-auto p-2 flex flex-col min-h-0">
+
+        <div class="game-card p-2 mb-2 flex-1 w-full">
+            <div id="activity-content"
+                class="w-full relative z-10 flex flex-col items-center justify-center h-full transition-opacity duration-200">
+                <div class="py-10 text-center">
+                    <div class="text-8xl mb-6 animate-pulse">🎯</div>
+                    <h2 class="text-5xl font-bold text-emerald-600 mb-4">Mula Belajar</h2>
+                    <p class="text-2xl text-slate-500 mb-8 font-semibold">Pilih aktiviti di bawah.</p>
+                    <div class="text-4xl animate-bounce">👇</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-none bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-2 border-2 border-white">
+            <h3 class="text-lg font-bold text-slate-700 mb-1 text-center">🎮 Pilih Aktiviti</h3>
+
+            <div class="grid grid-cols-5 gap-2 mb-2">
+                <button onclick="loadActivity(1)"
+                    class="btn-3d bg-blue-500 text-white font-bold py-2 px-1 rounded-xl text-sm md:text-base">1️⃣
+                    Pilih</button>
+                <button onclick="loadActivity(2)"
+                    class="btn-3d bg-green-500 text-white font-bold py-2 px-1 rounded-xl text-sm md:text-base">📊
+                    Susun</button>
+                <button onclick="loadActivity(3)"
+                    class="btn-3d bg-purple-500 text-white font-bold py-2 px-1 rounded-xl text-sm md:text-base">🔗
+                    Padan</button>
+                <button onclick="loadActivity(4)"
+                    class="btn-3d bg-orange-500 text-white font-bold py-2 px-1 rounded-xl text-sm md:text-base">🎨
+                    Warna</button>
+                <button onclick="loadActivity(5)"
+                    class="btn-3d bg-pink-500 text-white font-bold py-2 px-1 rounded-xl text-sm md:text-base">🍎
+                    Bilang</button>
+            </div>
+
+            <div class="flex justify-center gap-4 border-t-2 border-slate-100 pt-2">
+                <button onclick="clearActivity()"
+                    class="btn-3d bg-slate-400 text-white font-bold py-1 px-4 rounded-full text-base">🏠 Menu</button>
+                <button onclick="nextActivity()"
+                    class="btn-3d bg-indigo-500 text-white font-bold py-1 px-6 rounded-full text-lg">Seterusnya
+                    ➡️</button>
             </div>
         </div>
     </div>
 
-    <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-6 border-2 border-white">
-      <h3 class="text-2xl font-bold text-slate-700 mb-4 text-center">🎮 Pilih Aktiviti</h3>
-      
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-        <button onclick="loadActivity(1)" class="btn-3d bg-blue-500 text-white font-bold py-4 px-2 rounded-xl text-lg">1️⃣ Pilih Nombor</button>
-        <button onclick="loadActivity(2)" class="btn-3d bg-green-500 text-white font-bold py-4 px-2 rounded-xl text-lg">📊 Susun Tertib</button>
-        <button onclick="loadActivity(3)" class="btn-3d bg-purple-500 text-white font-bold py-4 px-2 rounded-xl text-lg">🔗 Padankan</button>
-        <button onclick="loadActivity(4)" class="btn-3d bg-orange-500 text-white font-bold py-4 px-2 rounded-xl text-lg">🎨 Warnakan</button>
-        <button onclick="loadActivity(5)" class="btn-3d bg-pink-500 text-white font-bold py-4 px-2 rounded-xl text-lg">🍎 Bilang Objek</button>
-      </div>
+    <script>
+        /* --- STANDARD HELPERS --- */
+        let currentActivity = 0;
+        let ttsEnabled = false;
+        let currentInfo = "Pilih aktiviti untuk mula belajar!";
+        let msVoice = null;
 
-      <div class="flex justify-center gap-4 border-t-2 border-slate-100 pt-6">
-        <button onclick="clearActivity()" class="btn-3d bg-slate-400 text-white font-bold py-2 px-6 rounded-full text-lg">🏠 Menu</button>
-        <button onclick="nextActivity()" class="btn-3d bg-indigo-500 text-white font-bold py-2 px-8 rounded-full text-xl">Seterusnya ➡️</button>
-      </div>
-    </div>
-  </div>
+        function initTTS() {
+            if ('speechSynthesis' in window) {
+                const voices = speechSynthesis.getVoices();
+                msVoice = voices.find(v => v.lang.includes('ms')) || voices.find(v => v.lang.includes('id'));
+            }
+        }
+        window.speechSynthesis.onvoiceschanged = initTTS;
 
-  <script>
-    /* --- STANDARD HELPERS --- */
-    let currentActivity = 0;
-    let ttsEnabled = false;
-    let currentInfo = "Pilih aktiviti untuk mula belajar!";
-    let msVoice = null;
+        function speak(text) {
+            if (!ttsEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ms-MY'; u.rate = 0.90; u.pitch = 1.05;
+            if (msVoice) u.voice = msVoice;
+            window.speechSynthesis.speak(u);
+        }
 
-    function initTTS(){
-      if('speechSynthesis' in window){
-         const voices = speechSynthesis.getVoices();
-         msVoice = voices.find(v => v.lang.includes('ms')) || voices.find(v => v.lang.includes('id'));
-      }
-    }
-    window.speechSynthesis.onvoiceschanged = initTTS;
+        function setInfo(text) {
+            currentInfo = text; const infoEl = document.getElementById('info-text');
+            infoEl.style.opacity = 0; setTimeout(() => { infoEl.textContent = text; infoEl.style.opacity = 1; }, 200);
+        }
 
-    function speak(text) { 
-        if (!ttsEnabled || !('speechSynthesis' in window)) return; 
-        window.speechSynthesis.cancel(); 
-        const u = new SpeechSynthesisUtterance(text); 
-        u.lang = 'ms-MY'; u.rate = 0.90; u.pitch = 1.05; 
-        if(msVoice) u.voice = msVoice;
-        window.speechSynthesis.speak(u); 
-    }
-    
-    function setInfo(text) { 
-        currentInfo = text; const infoEl = document.getElementById('info-text'); 
-        infoEl.style.opacity = 0; setTimeout(() => { infoEl.textContent = text; infoEl.style.opacity = 1; }, 200); 
-    }
-    
-    function speakInfo() { 
-        if (!ttsEnabled) { ttsEnabled = true; document.getElementById('speak-btn').classList.add('bg-green-100', 'text-green-600'); } 
-        speak(currentInfo); 
-    }
+        function speakInfo() {
+            if (!ttsEnabled) { ttsEnabled = true; document.getElementById('speak-btn').classList.add('bg-green-100', 'text-green-600'); }
+            speak(currentInfo);
+        }
 
-    function triggerWin() { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); }
+        function triggerWin() { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); }
 
-    /* --- ROUTER --- */
-    function loadActivity(n) {
-      currentActivity = n;
-      const content = document.getElementById('activity-content');
-      content.style.opacity = 0;
-      setTimeout(() => {
-          if (n === 1) setupAct1(content);
-          else if (n === 2) setupAct2(content);
-          else if (n === 3) setupAct3(content);
-          else if (n === 4) setupAct4(content);
-          else if (n === 5) setupAct5(content);
-          content.style.opacity = 1; 
-      }, 200);
-    }
+        /* --- ROUTER --- */
+        function loadActivity(n) {
+            currentActivity = n;
+            const content = document.getElementById('activity-content');
+            content.style.opacity = 0;
+            setTimeout(() => {
+                if (n === 1) setupAct1(content);
+                else if (n === 2) setupAct2(content);
+                else if (n === 3) setupAct3(content);
+                else if (n === 4) setupAct4(content);
+                else if (n === 5) setupAct5(content);
+                content.style.opacity = 1;
+            }, 200);
+        }
 
-    function clearActivity() {
-        currentActivity = 0;
-        document.getElementById('activity-content').innerHTML = `<div class="py-10 text-center"><div class="text-8xl mb-6 animate-pulse">🎯</div><h2 class="text-5xl font-bold text-emerald-600 mb-4">Kemahiran Nombor</h2><p class="text-2xl text-slate-500 mb-8 font-semibold">Pilih butang di bawah.</p></div>`;
-        setInfo("Pilih aktiviti di bawah.");
-    }
-    
-    function nextActivity() { let next = currentActivity + 1; if (next > 5) next = 1; loadActivity(next); }
+        function clearActivity() {
+            currentActivity = 0;
+            document.getElementById('activity-content').innerHTML = `<div class="py-10 text-center"><div class="text-8xl mb-6 animate-pulse">🎯</div><h2 class="text-5xl font-bold text-emerald-600 mb-4">Kemahiran Nombor</h2><p class="text-2xl text-slate-500 mb-8 font-semibold">Pilih butang di bawah.</p></div>`;
+            setInfo("Pilih aktiviti di bawah.");
+        }
 
-    /* =========================================
-       LOGIK AKTIVITI (DIPORT)
-       ========================================= */
+        function nextActivity() { let next = currentActivity + 1; if (next > 5) next = 1; loadActivity(next); }
 
-    /* --- 1. Pilih Nombor --- */
-    function setupAct1(content) {
-        setInfo("Klik nombor untuk dengar sebutan.");
-        const numbers = [
-            { num:0, word:'sifar', emoji:'⭕' }, { num:1, word:'satu', emoji:'1️⃣' },
-            { num:2, word:'dua', emoji:'2️⃣' },   { num:3, word:'tiga', emoji:'3️⃣' },
-            { num:4, word:'empat', emoji:'4️⃣' }, { num:5, word:'lima', emoji:'5️⃣' },
-            { num:6, word:'enam', emoji:'6️⃣' },  { num:7, word:'tujuh', emoji:'7️⃣' },
-            { num:8, word:'lapan', emoji:'8️⃣' }, { num:9, word:'sembilan', emoji:'9️⃣' },
-            { num:10, word:'sepuluh', emoji:'🔟' }
-        ];
+        /* =========================================
+           LOGIK AKTIVITI (DIPORT)
+           ========================================= */
 
-        content.innerHTML = `
+        /* --- 1. Pilih Nombor --- */
+        function setupAct1(content) {
+            setInfo("Klik nombor untuk dengar sebutan.");
+            const numbers = [
+                { num: 0, word: 'sifar', emoji: '⭕' }, { num: 1, word: 'satu', emoji: '1️⃣' },
+                { num: 2, word: 'dua', emoji: '2️⃣' }, { num: 3, word: 'tiga', emoji: '3️⃣' },
+                { num: 4, word: 'empat', emoji: '4️⃣' }, { num: 5, word: 'lima', emoji: '5️⃣' },
+                { num: 6, word: 'enam', emoji: '6️⃣' }, { num: 7, word: 'tujuh', emoji: '7️⃣' },
+                { num: 8, word: 'lapan', emoji: '8️⃣' }, { num: 9, word: 'sembilan', emoji: '9️⃣' },
+                { num: 10, word: 'sepuluh', emoji: '🔟' }
+            ];
+
+            content.innerHTML = `
             <div class="w-full max-w-5xl text-center">
-                <h3 class="text-3xl font-bold text-blue-600 mb-6">🎯 Galeri Nombor 0-10</h3>
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+                <h3 class="text-3xl font-bold text-blue-600 mb-4">🎯 Galeri Nombor 0-10</h3>
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
                     ${numbers.map(it => `
                         <button onclick="clickNum(this, '${it.word}')" 
-                            class="num-card btn-3d bg-blue-100 border-blue-300 p-4 rounded-xl flex flex-col items-center justify-center min-h-[100px]">
-                            <div class="text-3xl mb-1">${it.emoji}</div>
-                            <div class="text-2xl font-black text-blue-800">${it.num}</div>
-                            <div class="text-sm font-bold text-blue-600">${it.word}</div>
+                            class="num-card btn-3d bg-blue-100 border-blue-300 p-2 rounded-xl flex flex-col items-center justify-center min-h-[80px]">
+                            <div class="text-2xl mb-1">${it.emoji}</div>
+                            <div class="text-xl font-black text-blue-800">${it.num}</div>
+                            <div class="text-xs font-bold text-blue-600">${it.word}</div>
                         </button>
                     `).join('')}
                 </div>
             </div>
         `;
-    }
-    window.clickNum = function(el, word) {
-        document.querySelectorAll('.num-card').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-        setInfo(`Ini nombor ${word}.`);
-        speak(`Ini nombor ${word}.`);
-    }
+        }
+        window.clickNum = function (el, word) {
+            document.querySelectorAll('.num-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            setInfo(`Ini nombor ${word}.`);
+            speak(`Ini nombor ${word}.`);
+        }
 
-    /* --- 2. Susun Tertib (Drag & Drop) --- */
-    function setupAct2(content) {
-        setInfo("Seret nombor ke kotak bawah.");
-        const nums = [3,7,1,9,5,0,10,2].sort(()=>Math.random()-0.5);
+        /* --- 2. Susun Tertib (Drag & Drop) --- */
+        function setupAct2(content) {
+            setInfo("Seret nombor ke kotak bawah.");
+            const nums = [3, 7, 1, 9, 5, 0, 10, 2].sort(() => Math.random() - 0.5);
 
-        content.innerHTML = `
+            content.innerHTML = `
             <div class="w-full max-w-5xl text-center">
-                <h3 class="text-3xl font-bold text-green-600 mb-6">📊 Susun Tertib</h3>
+                <h3 class="text-3xl font-bold text-green-600 mb-4">📊 Susun Tertib</h3>
                 
-                <div class="flex flex-wrap justify-center gap-3 mb-8 min-h-[80px]">
+                <div class="flex flex-wrap justify-center gap-2 mb-4 min-h-[60px]">
                     ${nums.map(n => `
                         <div id="drag-${n}" draggable="true" ondragstart="dragStart(event)" data-number="${n}"
-                             class="draggable btn-3d bg-yellow-100 border-yellow-300 text-yellow-800 w-16 h-16 rounded-xl text-3xl font-bold flex items-center justify-center">
+                             class="draggable btn-3d bg-yellow-100 border-yellow-300 text-yellow-800 w-12 h-12 rounded-lg text-2xl font-bold flex items-center justify-center">
                             ${n}
                         </div>
                     `).join('')}
                 </div>
 
-                <div class="drop-zone min-h-[140px] rounded-3xl flex flex-wrap gap-3 justify-center items-center p-6"
+                <div class="drop-zone min-h-[100px] rounded-2xl flex flex-wrap gap-2 justify-center items-center p-4"
                      ondragover="allowDrop(event)" ondrop="dropToSeq(event)">
-                    <span class="text-slate-400 font-bold pointer-events-none w-full text-center">Seret nombor ke sini...</span>
+                    <span class="text-slate-400 font-bold pointer-events-none w-full text-center text-sm">Seret nombor ke sini...</span>
                 </div>
             </div>
         `;
-    }
-    window.dragStart = function(ev) { ev.dataTransfer.setData('text', ev.target.id); ev.target.style.opacity = '0.5'; }
-    window.allowDrop = function(ev) { ev.preventDefault(); ev.target.closest('.drop-zone').classList.add('drag-over'); }
-    window.dropToSeq = function(ev) {
-        ev.preventDefault();
-        const zone = ev.target.closest('.drop-zone');
-        zone.classList.remove('drag-over');
-        
-        // Remove placeholder
-        const span = zone.querySelector('span');
-        if(span) span.remove();
+        }
+        window.dragStart = function (ev) { ev.dataTransfer.setData('text', ev.target.id); ev.target.style.opacity = '0.5'; }
+        window.allowDrop = function (ev) { ev.preventDefault(); ev.target.closest('.drop-zone').classList.add('drag-over'); }
+        window.dropToSeq = function (ev) {
+            ev.preventDefault();
+            const zone = ev.target.closest('.drop-zone');
+            zone.classList.remove('drag-over');
 
-        const id = ev.dataTransfer.getData('text');
-        const item = document.getElementById(id);
-        if(!item) return;
-        
-        item.style.opacity = '1';
-        item.classList.remove('bg-yellow-100', 'border-yellow-300', 'text-yellow-800');
-        item.classList.add('bg-green-100', 'border-green-400', 'text-green-800'); // Change style on drop
-        zone.appendChild(item);
+            // Remove placeholder
+            const span = zone.querySelector('span');
+            if (span) span.remove();
 
-        const n = item.dataset.number;
-        setInfo(`Nombor ${n} diletakkan.`); 
-        speak(n);
-        triggerWin();
-    }
+            const id = ev.dataTransfer.getData('text');
+            const item = document.getElementById(id);
+            if (!item) return;
 
-    /* --- 3. Padankan (Logic Update) --- */
-    let selectedMatch = null;
-    function setupAct3(content) {
-        setInfo("Padankan nombor dengan perkataan.");
-        selectedMatch = null;
-        const pairs = [
-             {num:1, word:'satu'}, {num:3, word:'tiga'}, {num:5, word:'lima'},
-             {num:7, word:'tujuh'}, {num:9, word:'sembilan'}, {num:10, word:'sepuluh'}
-        ];
-        const rightSide = [...pairs].sort(()=>Math.random()-0.5);
+            item.style.opacity = '1';
+            item.classList.remove('bg-yellow-100', 'border-yellow-300', 'text-yellow-800');
+            item.classList.add('bg-green-100', 'border-green-400', 'text-green-800'); // Change style on drop
+            zone.appendChild(item);
 
-        content.innerHTML = `
+            const n = item.dataset.number;
+            setInfo(`Nombor ${n} diletakkan.`);
+            speak(n);
+            triggerWin();
+        }
+
+        /* --- 3. Padankan (Logic Update) --- */
+        let selectedMatch = null;
+        function setupAct3(content) {
+            setInfo("Padankan nombor dengan perkataan.");
+            selectedMatch = null;
+            const pairs = [
+                { num: 1, word: 'satu' }, { num: 3, word: 'tiga' }, { num: 5, word: 'lima' },
+                { num: 7, word: 'tujuh' }, { num: 9, word: 'sembilan' }, { num: 10, word: 'sepuluh' }
+            ];
+            const rightSide = [...pairs].sort(() => Math.random() - 0.5);
+
+            content.innerHTML = `
             <div class="w-full max-w-5xl text-center">
-                <h3 class="text-3xl font-bold text-purple-600 mb-6">🔗 Padankan</h3>
-                <div class="grid grid-cols-2 gap-8 md:gap-12">
-                    <div class="flex flex-col gap-3">
-                        <h4 class="text-xl font-bold text-slate-400">Nombor</h4>
+                <h3 class="text-3xl font-bold text-purple-600 mb-4">🔗 Padankan</h3>
+                <div class="grid grid-cols-2 gap-4 md:gap-8">
+                    <div class="flex flex-col gap-2">
+                        <h4 class="text-lg font-bold text-slate-400">Nombor</h4>
                         ${pairs.map(p => `
                             <button onclick="checkMatch(this, '${p.num}', 'num')" 
-                                class="num-card btn-3d bg-blue-100 border-blue-300 text-blue-900 text-3xl font-bold p-3 rounded-xl hover:bg-blue-200">
+                                class="num-card btn-3d bg-blue-100 border-blue-300 text-blue-900 text-2xl font-bold p-2 rounded-xl hover:bg-blue-200">
                                 ${p.num}
                             </button>
                         `).join('')}
                     </div>
-                    <div class="flex flex-col gap-3">
-                        <h4 class="text-xl font-bold text-slate-400">Perkataan</h4>
+                    <div class="flex flex-col gap-2">
+                        <h4 class="text-lg font-bold text-slate-400">Perkataan</h4>
                         ${rightSide.map(p => `
                             <button onclick="checkMatch(this, '${p.num}', 'word')"
-                                class="num-card btn-3d bg-green-100 border-green-300 text-green-900 text-2xl font-bold p-3 rounded-xl hover:bg-green-200">
+                                class="num-card btn-3d bg-green-100 border-green-300 text-green-900 text-xl font-bold p-2 rounded-xl hover:bg-green-200">
                                 ${p.word}
                             </button>
                         `).join('')}
@@ -292,71 +368,71 @@
                 </div>
             </div>
         `;
-    }
-    window.checkMatch = function(el, val, type) {
-        if(el.classList.contains('matched')) return;
-        
-        // Highlight selection
-        el.classList.add('selected');
-        
-        if(!selectedMatch) {
-            // First pick
-            selectedMatch = { el, val, type };
-            speak(type === 'num' ? val : el.innerText);
-        } else {
-            // Second pick
-            const prev = selectedMatch;
-            
-            if(prev.el === el) return; // clicked same button
+        }
+        window.checkMatch = function (el, val, type) {
+            if (el.classList.contains('matched')) return;
 
-            if(prev.val === val && prev.type !== type) {
-                // Match!
-                prev.el.classList.remove('selected');
-                el.classList.remove('selected');
-                prev.el.classList.add('matched');
-                el.classList.add('matched');
-                
-                speak("Betul!");
-                setInfo("Padanan yang betul!");
-                triggerWin();
+            // Highlight selection
+            el.classList.add('selected');
+
+            if (!selectedMatch) {
+                // First pick
+                selectedMatch = { el, val, type };
+                speak(type === 'num' ? val : el.innerText);
             } else {
-                // Wrong
-                setTimeout(() => {
+                // Second pick
+                const prev = selectedMatch;
+
+                if (prev.el === el) return; // clicked same button
+
+                if (prev.val === val && prev.type !== type) {
+                    // Match!
                     prev.el.classList.remove('selected');
                     el.classList.remove('selected');
-                }, 500);
-                speak("Salah.");
-                setInfo("Cuba lagi.");
+                    prev.el.classList.add('matched');
+                    el.classList.add('matched');
+
+                    speak("Betul!");
+                    setInfo("Padanan yang betul!");
+                    triggerWin();
+                } else {
+                    // Wrong
+                    setTimeout(() => {
+                        prev.el.classList.remove('selected');
+                        el.classList.remove('selected');
+                    }, 500);
+                    speak("Salah.");
+                    setInfo("Cuba lagi.");
+                }
+                selectedMatch = null;
             }
-            selectedMatch = null;
         }
-    }
 
-    /* --- 4. Warnakan (SVG) --- */
-    let paintColor = '#3b82f6';
-    function setupAct4(content) {
-        setInfo("Pilih warna, kemudian klik nombor.");
-        
-        const nums = [
-            {num:0, x:50, y:150, w:'sifar'}, {num:1, x:130, y:150, w:'satu'}, {num:2, x:210, y:150, w:'dua'},
-            {num:3, x:290, y:150, w:'tiga'}, {num:4, x:370, y:150, w:'empat'}, {num:5, x:450, y:150, w:'lima'},
-            {num:6, x:530, y:150, w:'enam'}, {num:7, x:610, y:150, w:'tujuh'}, {num:8, x:690, y:150, w:'lapan'},
-            {num:9, x:290, y:80, w:'sembilan'}, {num:10, x:450, y:80, w:'sepuluh'}
-        ];
+        /* --- 4. Warnakan (SVG) --- */
+        let paintColor = '#3b82f6';
+        function setupAct4(content) {
+            setInfo("Pilih warna, kemudian klik nombor.");
 
-        content.innerHTML = `
+            const nums = [
+                { num: 0, x: 50, y: 150, w: 'sifar' }, { num: 1, x: 130, y: 150, w: 'satu' }, { num: 2, x: 210, y: 150, w: 'dua' },
+                { num: 3, x: 290, y: 150, w: 'tiga' }, { num: 4, x: 370, y: 150, w: 'empat' }, { num: 5, x: 450, y: 150, w: 'lima' },
+                { num: 6, x: 530, y: 150, w: 'enam' }, { num: 7, x: 610, y: 150, w: 'tujuh' }, { num: 8, x: 690, y: 150, w: 'lapan' },
+                { num: 9, x: 290, y: 80, w: 'sembilan' }, { num: 10, x: 450, y: 80, w: 'sepuluh' }
+            ];
+
+            content.innerHTML = `
             <div class="w-full max-w-5xl text-center">
-                <h3 class="text-3xl font-bold text-orange-600 mb-4">🎨 Warnakan Nombor</h3>
+                <h3 class="text-3xl font-bold text-orange-600 mb-2">🎨 Warnakan Nombor</h3>
                 
-                <div class="flex justify-center gap-3 mb-6">
-                    ${['#ef4444','#3b82f6','#10b981','#eab308','#8b5cf6','#ec4899'].map(c => `
+                <div class="flex justify-center gap-2 mb-4">
+                    ${['#ef4444', '#3b82f6', '#10b981', '#eab308', '#8b5cf6', '#ec4899'].map(c => `
                         <button onclick="setColor('${c}', this)" style="background-color:${c}" 
-                                class="w-12 h-12 rounded-full border-4 border-slate-200 hover:scale-110 transition-transform"></button>
+                                class="w-8 h-8 rounded-full border-4 border-slate-200 hover:scale-110 transition-transform"></button>
                     `).join('')}
                 </div>
 
-                <div class="bg-white border-4 border-slate-200 rounded-2xl p-4 shadow-inner overflow-x-auto">
-                    <svg width="800" height="250" viewBox="0 0 800 250" class="mx-auto">
+                <div class="bg-white border-4 border-slate-200 rounded-2xl p-2 shadow-inner overflow-hidden flex justify-center">
+                    <svg width="100%" height="auto" viewBox="0 0 800 250" class="max-h-[200px]">
                         ${nums.map(n => `
                              <text x="${n.x}" y="${n.y}" class="coloring-item text-6xl font-black"
                                    onclick="applyColor(this, '${n.w}')" text-anchor="middle" dominant-baseline="middle">${n.num}</text>
@@ -365,51 +441,52 @@
                 </div>
             </div>
         `;
-    }
-    window.setColor = function(c, btn) {
-        paintColor = c;
-        // Visual feedback on palette
-        document.querySelectorAll('button[onclick^="setColor"]').forEach(b => b.style.borderColor = '#e2e8f0');
-        btn.style.borderColor = '#334155';
-        setInfo("Warna dipilih.");
-    }
-    window.applyColor = function(el, word) {
-        el.style.fill = paintColor;
-        speak(word);
-        setInfo(`Nombor ${word} diwarnakan.`);
-    }
+        }
+        window.setColor = function (c, btn) {
+            paintColor = c;
+            // Visual feedback on palette
+            document.querySelectorAll('button[onclick^="setColor"]').forEach(b => b.style.borderColor = '#e2e8f0');
+            btn.style.borderColor = '#334155';
+            setInfo("Warna dipilih.");
+        }
+        window.applyColor = function (el, word) {
+            el.style.fill = paintColor;
+            speak(word);
+            setInfo(`Nombor ${word} diwarnakan.`);
+        }
 
-    /* --- 5. Bilang Objek --- */
-    function setupAct5(content) {
-        setInfo("Klik kad untuk bilang objek.");
-        const items = [
-            {count:3, emoji:'🍎', name:'epal'}, {count:7, emoji:'⭐', name:'bintang'},
-            {count:5, emoji:'🐱', name:'kucing'}, {count:9, emoji:'🌸', name:'bunga'},
-            {count:2, emoji:'🚗', name:'kereta'}, {count:6, emoji:'🎈', name:'belon'}
-        ];
+        /* --- 5. Bilang Objek --- */
+        function setupAct5(content) {
+            setInfo("Klik kad untuk bilang objek.");
+            const items = [
+                { count: 3, emoji: '🍎', name: 'epal' }, { count: 7, emoji: '⭐', name: 'bintang' },
+                { count: 5, emoji: '🐱', name: 'kucing' }, { count: 9, emoji: '🌸', name: 'bunga' },
+                { count: 2, emoji: '🚗', name: 'kereta' }, { count: 6, emoji: '🎈', name: 'belon' }
+            ];
 
-        content.innerHTML = `
+            content.innerHTML = `
             <div class="w-full max-w-5xl text-center">
-                <h3 class="text-3xl font-bold text-pink-600 mb-6">🍎 Bilang Objek</h3>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <h3 class="text-3xl font-bold text-pink-600 mb-4">🍎 Bilang Objek</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     ${items.map(it => `
                         <button onclick="countObj(${it.count}, '${it.name}')" 
-                                class="btn-3d bg-pink-100 border-pink-300 p-6 rounded-2xl hover:bg-pink-200 flex flex-col items-center">
-                            <div class="text-4xl mb-3 tracking-widest leading-relaxed">${it.emoji.repeat(it.count)}</div>
-                            <p class="text-xl font-bold text-pink-800 uppercase">Kira ${it.name}</p>
+                                class="btn-3d bg-pink-100 border-pink-300 p-4 rounded-2xl hover:bg-pink-200 flex flex-col items-center">
+                            <div class="text-3xl mb-2 tracking-widest leading-relaxed">${it.emoji.repeat(it.count)}</div>
+                            <p class="text-lg font-bold text-pink-800 uppercase">Kira ${it.name}</p>
                         </button>
                     `).join('')}
                 </div>
             </div>
         `;
-    }
-    window.countObj = function(c, name) {
-        const msg = `Ada ${c} ${name}.`;
-        speak(msg);
-        setInfo(msg);
-        triggerWin();
-    }
+        }
+        window.countObj = function (c, name) {
+            const msg = `Ada ${c} ${name}.`;
+            speak(msg);
+            setInfo(msg);
+            triggerWin();
+        }
 
-  </script>
+    </script>
 </body>
+
 </html>
